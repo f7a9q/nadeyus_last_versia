@@ -8,7 +8,6 @@ function load(){
 
     load_data().then(routes => {
     console.log('sckdck '+routes.length);
-
     for (let i = 0; i < routes.length; i++) {
         let route = routes[i];
         let tr = '<tr>';
@@ -45,7 +44,8 @@ function load(){
         }
         tr += '</table></div>';
         tr += '</tr>';
-        $('#painting > tbody:last-child').append(tr);
+        painting.querySelector('tbody').innerHTML = tr;
+        //('#painting > tbody tr:last-child').append(tr);
     }
     });
 }

@@ -2,7 +2,7 @@ function load(){
     var mb = document.getElementById("clickme");
     mb.addEventListener("click", myfunction);
 
-    let routes = JSON.parse(routes_output);
+    $.getJSON('https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json', function(routes) {
 
     for (let i = 0; i < routes.length; i++) {
         let route = routes[i];
@@ -25,12 +25,12 @@ function load(){
             tr += '<tr>';
             tr += '<div id="route_overlap' + route._id + '' + route_overlap._id + '" class="placeholder"><table>';
             for (let k = 0; k < route_overlap.a.length; k++) {
-                let a = route_overlap.a[i];
+                let a = route_overlap.a[k];
                 tr += '<tr>' + a.percentage + '</tr>';
                 tr += '<tr>';
                 tr += '<div id="a' + route._id + '' + route_overlap._id + '' + k + '" class="placeholder"><table>';
                 for (let l = 0; l < a.stops.length; l++) {
-                    tr += '<tr>' + a.stops[i].name + '</tr>';
+                    tr += '<tr>' + a.stops[l].name + '</tr>';
                 }
                 tr += '</table></div>';
                 tr += '</tr>';
@@ -42,6 +42,7 @@ function load(){
         tr += '</tr>';
         $('#painting > tbody:last-child').append(tr);
     }
+    });
 }
 
 function myfunction() {

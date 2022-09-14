@@ -1,8 +1,13 @@
+async function load_data() {
+    let url = 'https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json';
+    return await (await fetch(url)).json();
+}
 function load(){
     var mb = document.getElementById("clickme");
     mb.addEventListener("click", myfunction);
 
-    $.getJSON('https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json', function(routes) {
+    load_data().then(routes => {
+    console.log('sckdck '+routes.length);
 
     for (let i = 0; i < routes.length; i++) {
         let route = routes[i];

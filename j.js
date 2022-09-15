@@ -69,7 +69,7 @@ function load(){
         tr += '</div>';
     }
     console.log(tr);
-    document.getElementById('routes_table').innerHTML += tr;
+    document.getElementById('routes_table_body').innerHTML += tr;
     });
 }
 

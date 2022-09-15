@@ -17,43 +17,49 @@ function load(){
     let tr = '';
     for (let i = 0; i < routes.length; i++) {
         var route = routes[i];
-        tr += '<tr>';
-        tr += '<td>' + route.name + '</td>';
-        tr += '<td>' + route.description + '</td>';
-        tr += '<td>' + (Math.round(route.max_a_percentage * 100.00) / 100.00) + '</td>';
-        tr += '<td>' + (Math.round(route.max_b_percentage * 100.00) / 100.00) + '</td>';
-        tr += '</tr>';
-        tr += '<tr>';
-        tr += '<div id="route' + route._id + '" class="placeholder"><table>';
-        for (let j = 0; j < route.route_overlap.length; j++) {
-            var route_overlap = route.route_overlap[j];
-            tr += '<tr>';
-            tr += '<td>' + route_overlap.name + '</td>';
-            tr += '<td>' + route_overlap.description + '</td>';
-            tr += '<td>' + route_overlap.a_percentage + '</td>';
-            tr += '<td>' + route_overlap.b_percentage + '</td>';
-            tr += '</tr>';
-            tr += '<tr>';
-            tr += '<div id="route_overlap' + route._id + '' + route_overlap._id + '" class="placeholder"><table>';
-            for (let k = 0; false && k < route_overlap.a.length; k++) {
-                var a = route_overlap.a[k];
-                tr += '<tr>' + a.percentage + '</tr>';
-                tr += '<tr>';
-                tr += '<div id="a' + route._id + '' + route_overlap._id + '' + k + '" class="placeholder"><table>';
-                for (let l = 0; l < a.stops.length; l++) {
-                    tr += '<tr>' + a.stops[l].name + '</tr>';
-                }
-                tr += '</table></div>';
-                tr += '</tr>';
-            }
-            tr += '</table></div>';
-            tr += '</tr>';
-        }
-        tr += '</table></div>';
-        tr += '</tr>';
+        tr += '<div class="row">';
+            tr += '<div id="route' + route._id + 'class="table">';
+                tr += '<div class="row">';
+                    tr += '<div class="cell">' + route.name + '</div>'
+                    tr += '<div class="cell">' + route.description + '</div>';
+                    tr += '<div class="cell">' + round(route.max_a_percentage) + '</div>';
+                    tr += '<div class="cell">' + round(route.max_b_percentage) + '</div>';
+                tr += '</div>';
+                tr += '<div class="row">';
+                    tr += '<div id="route_overlap' + route._id + '" class="table">';
+                    for (let j = 0; j < route.route_overlap.length; j++) {
+                        var route_overlap = route.route_overlap[j];
+                        tr += '<div class="table">';
+                            tr += '<div class="row">';
+                                tr += '<div class="cell">' + route_overlap.name + '</div>';
+                                tr += '<div class="cell">' + route_overlap.description + '</div>';
+                                tr += '<div class="cell">' + round(route_overlap.a_percentage) + '</div>';
+                                tr += '<div class="cell">' + round(route_overlap.b_percentage) + '</div>';
+                            tr += '</div>';
+                            tr += '<div class="row">';
+                                tr += '<div id="stops_overlaps' + route._id + '' + route_overlap._id + '" class="placeholder table">';
+                                for (let k = 0; false && k < route_overlap.a.length; k++) {
+                                    var a = route_overlap.a[k];
+                                    tr += '<div class="row">' + a.percentage + '</div>';
+                                    tr += '<div class="row">';
+                                    tr += '<div id="a' + route._id + '' + route_overlap._id + '' + k + '" class="placeholder table">';
+                                    for (let l = 0; l < a.stops.length; l++) {
+                                        tr += '<div class="row">' + a.stops[l].name + '</div>';
+                                    }
+                                    tr += '</div>';
+                                    tr += '</div>';
+                                }
+                                tr += '</div>';
+                            tr += '</div>';
+                        tr += '</div>';
+                    }
+                    tr += '</div>';
+                tr += '</div>';
+            tr += '</div>';
+        tr += '</div>';
     }
     console.log(tr);
-    routes_table.querySelector('tbody').innerHTML = tr;
+    document.getElementById('routes_table').innerHTML += tr;
     });
 }
 

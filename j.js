@@ -35,7 +35,7 @@ function load(){
         table_text += '</tr>';
         table_text += '<tr id="route' + route._id + 'hideable" class="hideable">';
         table_text += '<td colspan="4">';
-        table_text += '<table cellspacing="0" border="1" cellpadding="5">';
+        table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
         table_text += '<tr>';
         table_text += '<td class="lbl">Номер маршрута</td>';
         table_text += '<td class="lbl">Маршрут</td>';
@@ -47,8 +47,8 @@ function load(){
             table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + '" onclick=hide_callback(this)>';
             table_text += '<td>' + route_overlap.name + '</td>';
             table_text += '<td>' + route_overlap.description + '</td>';
-            table_text += '<td>' + route_overlap.a_percentage + '</td>'
-            table_text += '<td>' + route_overlap.b_percentage + '</td>'
+            table_text += '<td>' + round(route_overlap.a_percentage) + '</td>'
+            table_text += '<td>' + round( route_overlap.b_percentage) + '</td>'
             table_text += '</tr>';
 
             if (!has_a && !has_b)
@@ -58,9 +58,9 @@ function load(){
             table_text += '<td colspan="4">';
             for (let k = 0; k < route_overlap.a.length; k++) {
                 var a = route_overlap.a[k];
-                table_text += '<table cellspacing="0" border="1" cellpadding="5">';
+                table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
                 table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + a.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                table_text += 'Прямой маршрут. Участок ' + k + '. Процент совпадения: ';
+                table_text += 'Прямой маршрут. Участок ' + (k + 1) + '. Процент совпадения: ';
                 table_text += round(a.percentage);
                 table_text += '</td></tr>';
                 for (let l = 0; l < a.stops.length; l++) {
@@ -73,9 +73,9 @@ function load(){
 
             for (let k = 0; k < route_overlap.b.length; k++) {
                 var b = route_overlap.b[k];
-                table_text += '<table cellspacing="0" border="1" cellpadding="5">';
+                table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
                 table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + b.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                table_text += 'Обратный маршрут. Участок ' + k + '. Процент совпадения: ';
+                table_text += 'Обратный маршрут. Участок ' + (k + 1) + '. Процент совпадения: ';
                 table_text += round(b.percentage);
                 table_text += '</td></tr>';
                 for (let l = 0; l < b.stops.length; l++) {
@@ -109,3 +109,24 @@ function hide_callback_count(evt) {
         tablewrap.classList.toggle('hideable')
     }
 };
+
+function searchTable() {
+    var phrase = document.getElementById('search-text');
+    var table = document.getElementById("routes_table");
+    var regPhrase = new RegExp(phrase.value, 'i');
+    var flag = false;
+    for (var i = 1; i < table.rows.length; i++) {
+        flag = false;
+        for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
+            flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
+            if (flag) break;
+        }
+        if (flag) {
+            table.rows[i].style.display = "";
+
+        } else {
+            table.rows[i].style.display = "none";
+        }
+
+    }
+}

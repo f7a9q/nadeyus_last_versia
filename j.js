@@ -10,25 +10,17 @@ function load(){
     $.getJSON('https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json', function(routes_loaded) {
         routes = routes_loaded;
         state = 0;
-        build_table(routes);
+        document.getElementById('routes_table').innerHTML = build_table(routes);
     });
 }
 
 function sort_table(sort_method_str) {
     var sort_method = Number(sort_method_str);
     switch (sort_method) {
-        case 0:
-            if (state == 0){
-                console.log("0");
+        default:
+            if (state == 0)
                 return;
-            }
-            state = 0;
-            break;
-        case 1:
-            if (state == 0){
-                console.log("1");
-                return;
-            }
+
             state = 0;
             break;
         case 2:
@@ -53,39 +45,7 @@ function sort_table(sort_method_str) {
             break;
     }
     routes_sort = structuredClone(routes);
-    build_table(routes_sort);
-}
-
-function sort_max_a_percentage_asc(a, b) {
-    if (a.max_a_percentage < b.max_a_percentage)
-        return -1;
-    if (a.max_a_percentage > b.max_a_percentage)
-        return 1;
-    return 0;
-}
-
-function sort_max_a_percentage_desc(a, b) {
-    if (a.max_a_percentage < b.max_a_percentage)
-        return 1;
-    if (a.max_a_percentage > b.max_a_percentage)
-        return -1;
-    return 0;
-}
-
-function sort_max_b_percentage_asc(a, b) {
-    if (a.max_b_percentage < b.max_b_percentage)
-        return -1;
-    if (a.max_b_percentage > b.max_b_percentage)
-        return 1;
-    return 0;
-}
-
-function sort_max_b_percentage_desc(a, b) {
-    if (a.max_b_percentage < b.max_b_percentage)
-        return 1;
-    if (a.max_b_percentage > b.max_b_percentage)
-        return -1;
-    return 0;
+    document.getElementById('routes_table').innerHTML = build_table(routes_sort);
 }
 
 function build_table(routes) {
@@ -126,8 +86,10 @@ function build_table(routes) {
         
         var has_a = route.max_a_percentage > 0.0;
         var has_b = route.max_b_percentage > 0.0;
-        table_text += '<tr id="route' + route._id + '" onclick=hide_callback(this)>';
-        table_text += '<td>' + route.name + '</td>';
+        table_text += '<tr id="route' + route._id + '" onclick=hide_callback(this)';
+        if ((i % 2) == 0)
+            table_text += ' class="grey-table"';
+        table_text += '><td>' + route.name + '</td>';
         table_text += '<td>' + route.description + '</td>';
         if (!has_a && !has_b) {
             table_text += '<td colspan="2">Совпадений нет</td>';
@@ -148,76 +110,87 @@ function build_table(routes) {
         table_text += '<tr id="route' + route._id + 'hideable" class="hideable">';
         table_text += '<td colspan="4">';
         table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
-        table_text += '<tr>';
-        table_text += '<td>Номер маршрута</td>';
-        table_text += '<td>Маршрут</td>';
-        if (has_b) {
-            table_text += '<td>% сходства прямого маршрута</td>';
-            table_text += '<td>% сходства обратного маршрута</td>';
-        }
-        else
-            table_text += '<td>% сходства маршрута</td>';
-        table_text += '</tr>';
-        for (let j = 0; j < route.route_overlap.length; j++) {
-            var route_overlap = route.route_overlap[j];
-            var has_a_overlap = route_overlap.a_percentage > 0.0;
-            var has_b_overlap = route_overlap.b_percentage > 0.0;
-            table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + '" onclick=hide_callback(this)>';
-            table_text += '<td>' + route_overlap.name + '</td>';
-            table_text += '<td>' + route_overlap.description + '</td>';
-            table_text += '<td>' + round(route_overlap.a_percentage) + '</td>'
-            if (has_b)
-                if (has_b_overlap)
-                    table_text += '<td>' + round(route_overlap.b_percentage) + '</td>'
-                else
-                    table_text += '<td>Совпадений нет</td>';
-            table_text += '</tr>';
-
-            if (!has_a && !has_b)
-                continue;
-
-            table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + 'hideable" class="hideable">';
-            table_text += '<td colspan="4">';
-            for (let k = 0; k < route_overlap.a.length; k++) {
-                var a = route_overlap.a[k];
-                table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
-                table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + a.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                if (has_b_overlap)
-                    table_text += 'Прямой маршрут. Участок ' + (k + 1) + '. Процент совпадения участка: ';
-                else
-                    table_text += 'Участок ' + (k + 1) + '. Процент совпадения участка: ';
-                table_text += round(a.percentage);
-                table_text += '</td></tr>';
-                for (let l = 0; l < a.stops.length; l++) {
-                    table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + 'hideable' + l + '" class="hideable"><td colspan="4">';
-                    table_text += a.stops[l].name;
-                    table_text += '</td></tr>';
-                }
-                table_text += '</table>';
-            }
-
-            for (let k = 0; k < route_overlap.b.length; k++) {
-                var b = route_overlap.b[k];
-                table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
-                table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + b.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                table_text += 'Обратный маршрут. Участок ' + (k + 1) + '. Процент совпадения участка: ';
-                table_text += round(b.percentage);
-                table_text += '</td></tr>';
-                for (let l = 0; l < b.stops.length; l++) {
-                    table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + 'hideable' + l + '" class="hideable"><td colspan="4">';
-                    table_text += b.stops[l].name;
-                    table_text += '</td></tr>';
-                }
-                table_text += '</table>';
-            }
-            table_text += '</td>';
-            table_text += '</tr>';
-        }
+        table_text += build_inner_table(route, has_a, has_b);
         table_text += '</table>';
         table_text += '</td>';
         table_text += '</tr>';
     }
-    document.getElementById('routes_table').innerHTML = table_text;
+    return table_text;
+}
+
+function build_inner_table(route, has_a, has_b) {
+    let table_text = '<tr>';
+    table_text += '<td>Номер маршрута</td>';
+    table_text += '<td>Маршрут</td>';
+    if (has_b) {
+        table_text += '<td>% сходства прямого маршрута</td>';
+        table_text += '<td>% сходства обратного маршрута</td>';
+    }
+    else
+        table_text += '<td>% сходства маршрута</td>';
+    table_text += '</tr>';
+    for (let j = 0; j < route.route_overlap.length; j++) {
+        var route_overlap = route.route_overlap[j];
+        var has_a_overlap = route_overlap.a_percentage > 0.0;
+        var has_b_overlap = route_overlap.b_percentage > 0.0;
+        table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + '" onclick=hide_callback(this)';
+        if ((j % 2) == 0)
+            table_text += ' class="grey-table"';
+        table_text += '><td>' + route_overlap.name + '</td>';
+        table_text += '<td>' + route_overlap.description + '</td>';
+        table_text += '<td>' + round(route_overlap.a_percentage) + '</td>'
+        if (has_b)
+            if (has_b_overlap)
+                table_text += '<td>' + round(route_overlap.b_percentage) + '</td>'
+            else
+                table_text += '<td>Совпадений нет</td>';
+        table_text += '</tr>';
+
+        if (!has_a && !has_b)
+            continue;
+
+        table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + 'hideable" class="hideable">';
+        table_text += '<td colspan="4">';
+        for (let k = 0; k < route_overlap.a.length; k++) {
+            var a = route_overlap.a[k];
+            table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
+            table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + a.stops.length + '" onclick=hide_callback_count(this)>';
+            table_text += '<td colspan="4">';
+            if (has_b_overlap)
+                table_text += 'Прямой маршрут. ';
+            table_text += 'Участок ' + (k + 1) + '. Процент совпадения участка: ';
+            table_text += round(a.percentage);
+            table_text += '</td></tr>';
+            for (let l = 0; l < a.stops.length; l++) {
+                table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + 'hideable' + l + '" class="hideable';
+                if ((l % 2) == 0)
+                    table_text += ' grey-table';
+                table_text += '"><td colspan="4">' + a.stops[l].name + '</td></tr>';
+            }
+            table_text += '</table>';
+        }
+
+        for (let k = 0; k < route_overlap.b.length; k++) {
+            var b = route_overlap.b[k];
+            table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
+            table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + b.stops.length + '" onclick=hide_callback_count(this)>';
+            table_text += '<td colspan="4">';
+            table_text += 'Обратный маршрут. ';
+            table_text += 'Участок ' + (k + 1) + '. Процент совпадения участка: ';
+            table_text += round(b.percentage);
+            table_text += '</td></tr>';
+            for (let l = 0; l < b.stops.length; l++) {
+                table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + 'hideable' + l + '" class="hideable"';
+                if ((l % 2) == 0)
+                    table_text += ' grey-table';
+                table_text += '"><td colspan="4">' + b.stops[l].name + '</td></tr>';
+            }
+            table_text += '</table>';
+        }
+        table_text += '</td>';
+        table_text += '</tr>';
+    }
+    return table_text;
 }
 
 function hide_callback(evt) {
@@ -236,5 +209,69 @@ function hide_callback_count(evt) {
 
 function searchTable() {
     routes_sort = structuredClone(routes);
-    build_table(routes_sort);
+    document.getElementById('routes_table').innerHTML = build_table(routes_sort);
+}
+
+function sort_max_a_percentage_asc(a, b) {
+    if (a.max_a_percentage < b.max_a_percentage)
+        return -1;
+    if (a.max_a_percentage > b.max_a_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_max_a_percentage_desc(a, b) {
+    if (a.max_a_percentage < b.max_a_percentage)
+        return 1;
+    if (a.max_a_percentage > b.max_a_percentage)
+        return -1;
+    return 0;
+}
+
+function sort_max_b_percentage_asc(a, b) {
+    if (a.max_b_percentage < b.max_b_percentage)
+        return -1;
+    if (a.max_b_percentage > b.max_b_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_max_b_percentage_desc(a, b) {
+    if (a.max_b_percentage < b.max_b_percentage)
+        return 1;
+    if (a.max_b_percentage > b.max_b_percentage)
+        return -1;
+    return 0;
+}
+
+function sort_inner_a_percentage_asc(a, b) {
+    if (a.inner_a_percentage < b.inner_a_percentage)
+        return -1;
+    if (a.inner_a_percentage > b.inner_a_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_inner_a_percentage_desc(a, b) {
+    if (a.inner_a_percentage < b.inner_a_percentage)
+        return 1;
+    if (a.inner_a_percentage > b.inner_a_percentage)
+        return -1;
+    return 0;
+}
+
+function sort_inner_b_percentage_asc(a, b) {
+    if (a.inner_b_percentage < b.inner_b_percentage)
+        return -1;
+    if (a.inner_b_percentage > b.inner_b_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_inner_b_percentage_desc(a, b) {
+    if (a.inner_b_percentage < b.inner_b_percentage)
+        return 1;
+    if (a.inner_b_percentage > b.inner_b_percentage)
+        return -1;
+    return 0;
 }

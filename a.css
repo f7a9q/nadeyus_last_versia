@@ -11,6 +11,19 @@
 .hideable {
     display: none;
 }
+.grey-table {
+    background-color: #f0f0f0;
+}
+.reset{
+
+    height: 40px;
+    margin-right: 310010110100px;
+}
+.reset_2{
+    width: 30px;
+    height: 30px;
+    margin-left: 0px;
+}
 body{
     font-family: Helvetica;
     -webkit-font-smoothing: antialiased;

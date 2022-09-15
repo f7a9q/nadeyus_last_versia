@@ -2,17 +2,128 @@
     return Math.round(num * 100.0) / 100.0;
 }
 
+var routes;
+var routes_sort;
+var state;
+
 function load(){
-    $.getJSON('https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json', function(routes) {
+    $.getJSON('https://raw.githubusercontent.com/f7a9q/nadeyus_last_versia/main/routes_output.json', function(routes_loaded) {
+        routes = routes_loaded;
+        state = 0;
+        build_table(routes);
+    });
+}
+
+function sort_table(sort_method_str) {
+    var sort_method = Number(sort_method_str);
+    switch (sort_method) {
+        case 0:
+            if (state == 0){
+                console.log("0");
+                return;
+            }
+            state = 0;
+            break;
+        case 1:
+            if (state == 0){
+                console.log("1");
+                return;
+            }
+            state = 0;
+            break;
+        case 2:
+            switch (state) {
+            case 5:
+                state = 6;
+                break;
+            default:
+                state = 5;
+                break;
+            }
+            break;
+        case 3:
+            switch (state) {
+            case 7:
+                state = 8;
+                break;
+            default:
+                state = 7;
+                break;
+            }
+            break;
+    }
+    routes_sort = structuredClone(routes);
+    build_table(routes_sort);
+}
+
+function sort_max_a_percentage_asc(a, b) {
+    if (a.max_a_percentage < b.max_a_percentage)
+        return -1;
+    if (a.max_a_percentage > b.max_a_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_max_a_percentage_desc(a, b) {
+    if (a.max_a_percentage < b.max_a_percentage)
+        return 1;
+    if (a.max_a_percentage > b.max_a_percentage)
+        return -1;
+    return 0;
+}
+
+function sort_max_b_percentage_asc(a, b) {
+    if (a.max_b_percentage < b.max_b_percentage)
+        return -1;
+    if (a.max_b_percentage > b.max_b_percentage)
+        return 1;
+    return 0;
+}
+
+function sort_max_b_percentage_desc(a, b) {
+    if (a.max_b_percentage < b.max_b_percentage)
+        return 1;
+    if (a.max_b_percentage > b.max_b_percentage)
+        return -1;
+    return 0;
+}
+
+function build_table(routes) {
+    switch (state) {
+        case 5:
+            routes.sort(sort_max_a_percentage_asc);
+            break;
+        case 6:
+            routes.sort(sort_max_a_percentage_desc);
+            break;
+        case 7:
+            routes.sort(sort_max_b_percentage_asc);
+            break;
+        case 8:
+            routes.sort(sort_max_b_percentage_desc);
+            break;
+    }
+    
+    var search_phrase = document.getElementById('search-text').value.toLowerCase();
+    var ignore_search = $.isEmptyObject(search_phrase);
+
     let table_text = '';
     table_text += '<tr>';
-    table_text += '<td class="lbl">Номер маршрута</td>';
-    table_text += '<td class="lbl">Маршрут</td>';
-    table_text += '<td class="lbl">Макс % сходства прямого маршрута</td>';
-    table_text += '<td class="lbl">Макс % сходства обратного маршрута</td>';
+    table_text += '<td onclick=sort_table("0")>Номер маршрута</td>';
+    table_text += '<td onclick=sort_table("1")>Маршрут</td>';
+    table_text += '<td onclick=sort_table("2")>Макс % сходства прямого маршрута</td>';
+    table_text += '<td onclick=sort_table("3")>Макс % сходства обратного маршрута</td>';
     table_text += '</tr>';
     for (let i = 0; i < routes.length; i++) {
         var route = routes[i];
+        if (!ignore_search){
+            if (!route.name.toLowerCase().includes(search_phrase)
+                && !route.description.toLowerCase().includes(search_phrase)
+                && !String(round(route.max_a_percentage)).toLowerCase().includes(search_phrase)
+                && !String(round(route.max_b_percentage)).toLowerCase().includes(search_phrase))
+                continue;
+        }
+        
         var has_a = route.max_a_percentage > 0.0;
         var has_b = route.max_b_percentage > 0.0;
         table_text += '<tr id="route' + route._id + '" onclick=hide_callback(this)>';
@@ -20,15 +131,16 @@ function load(){
         table_text += '<td>' + route.description + '</td>';
         if (!has_a && !has_b) {
             table_text += '<td colspan="2">Совпадений нет</td>';
+            continue;
         }
         else {
             if (has_a)
-                table_text += '<td>' + round(route.max_a_percentage) + '</td>'
+                table_text += '<td class="sort_a">' + round(route.max_a_percentage) + '</td>'
             else
                 table_text += '<td>Совпадений нет</td>';
 
             if (has_b)
-                table_text += '<td>' + round(route.max_b_percentage) + '</td>'
+                table_text += '<td class="sort_b">' + round(route.max_b_percentage) + '</td>'
             else
                 table_text += '<td>Совпадений нет</td>';
         }
@@ -37,18 +149,28 @@ function load(){
         table_text += '<td colspan="4">';
         table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
         table_text += '<tr>';
-        table_text += '<td class="lbl">Номер маршрута</td>';
-        table_text += '<td class="lbl">Маршрут</td>';
-        table_text += '<td class="lbl">% сходства прямого маршрута</td>';
-        table_text += '<td class="lbl">% сходства обратного маршрута</td>';
+        table_text += '<td>Номер маршрута</td>';
+        table_text += '<td>Маршрут</td>';
+        if (has_b) {
+            table_text += '<td>% сходства прямого маршрута</td>';
+            table_text += '<td>% сходства обратного маршрута</td>';
+        }
+        else
+            table_text += '<td>% сходства маршрута</td>';
         table_text += '</tr>';
         for (let j = 0; j < route.route_overlap.length; j++) {
             var route_overlap = route.route_overlap[j];
+            var has_a_overlap = route_overlap.a_percentage > 0.0;
+            var has_b_overlap = route_overlap.b_percentage > 0.0;
             table_text += '<tr id="route_overlap' + route._id + '' + route_overlap._id + '" onclick=hide_callback(this)>';
             table_text += '<td>' + route_overlap.name + '</td>';
             table_text += '<td>' + route_overlap.description + '</td>';
             table_text += '<td>' + round(route_overlap.a_percentage) + '</td>'
-            table_text += '<td>' + round( route_overlap.b_percentage) + '</td>'
+            if (has_b)
+                if (has_b_overlap)
+                    table_text += '<td>' + round(route_overlap.b_percentage) + '</td>'
+                else
+                    table_text += '<td>Совпадений нет</td>';
             table_text += '</tr>';
 
             if (!has_a && !has_b)
@@ -60,7 +182,10 @@ function load(){
                 var a = route_overlap.a[k];
                 table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
                 table_text += '<tr id="a' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + a.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                table_text += 'Прямой маршрут. Участок ' + (k + 1) + '. Процент совпадения: ';
+                if (has_b_overlap)
+                    table_text += 'Прямой маршрут. Участок ' + (k + 1) + '. Процент совпадения участка: ';
+                else
+                    table_text += 'Участок ' + (k + 1) + '. Процент совпадения участка: ';
                 table_text += round(a.percentage);
                 table_text += '</td></tr>';
                 for (let l = 0; l < a.stops.length; l++) {
@@ -75,7 +200,7 @@ function load(){
                 var b = route_overlap.b[k];
                 table_text += '<table class="table-wrapper" cellspacing="0" border="1" cellpadding="5">';
                 table_text += '<tr id="b' + route._id + '' + route_overlap._id + 'overlap' + k + '/' + b.stops.length + '" onclick=hide_callback_count(this)><td colspan="4">';
-                table_text += 'Обратный маршрут. Участок ' + (k + 1) + '. Процент совпадения: ';
+                table_text += 'Обратный маршрут. Участок ' + (k + 1) + '. Процент совпадения участка: ';
                 table_text += round(b.percentage);
                 table_text += '</td></tr>';
                 for (let l = 0; l < b.stops.length; l++) {
@@ -93,7 +218,6 @@ function load(){
         table_text += '</tr>';
     }
     document.getElementById('routes_table').innerHTML = table_text;
-    });
 }
 
 function hide_callback(evt) {
@@ -111,22 +235,6 @@ function hide_callback_count(evt) {
 };
 
 function searchTable() {
-    var phrase = document.getElementById('search-text');
-    var table = document.getElementById("routes_table");
-    var regPhrase = new RegExp(phrase.value, 'i');
-    var flag = false;
-    for (var i = 1; i < table.rows.length; i++) {
-        flag = false;
-        for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
-            flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
-            if (flag) break;
-        }
-        if (flag) {
-            table.rows[i].style.display = "";
-
-        } else {
-            table.rows[i].style.display = "none";
-        }
-
-    }
+    routes_sort = structuredClone(routes);
+    build_table(routes_sort);
 }

@@ -2,33 +2,10 @@
   <head>
     <link href="a.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-    <script type="text/javascript" src="require.js"></script>
-    <script type="text/javascript" src="routes_output.json"></script>
     <script type="text/javascript" src="j.js"></script>
   </head>
   <body onload="load()">
-    <div id="displaytable" class="placeholder">
-      <table id="displaytable2" width="100%" cellpadding="1" cellspacing="0" border="3">
-        <tr align="center">
-          <td class="lbl">Номер маршрута</td>
-          <td class="lbl">Маршрут</td>
-          <td class="lbl">Макс % сходства прямого маршрута</td>
-          <td class="lbl">Макс % сходства обратного маршрута</td>
-        </tr>
-      </table>
-    </div>
-    <div id="button_div" class="placeholder">
-      <input type="button" id="clickme" value="Show/Hide" />
-    </div>
-    <div id="routes_table" class="table">
-      <div id="routes_table_body"  class="table-body">
-        <div class="table-row">
-          <div class="table-cell">Номер маршрута</div>
-          <div class="table-cell">Маршрут</div>
-          <div class="table-cell">Макс % сходства прямого маршрута</div>
-          <div class="table-cell">Макс % сходства обратного маршрута</div>
-        </div>
-      </div>
-    </div>
+    <table id="routes_table" cellspacing="0" border="1" cellpadding="5">
+    </table>
   </body>
 </html>

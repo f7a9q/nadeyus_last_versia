@@ -1,17 +1,7 @@
-#table {
-    width: 100%;
-    display: table;
+.noselect {
+    display: '';
 }
-#table-body{
-    display: table-row-group;
-}
-.table-row{
-    display: table-row;
-}
-.table-cell{
-    display: table-cell;
-    border: 1px solid #dddddd;
-    padding: 8px;
-    line-height: 1.42857143;
-    vertical-align: top;
+
+.hideable {
+    display: none;
 }
